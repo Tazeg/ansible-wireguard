@@ -22,7 +22,7 @@ ansible-playbook -i <IP>, playbooks/wireguard_server.yml -e "ansible_port=2222" 
 - `-e "ansible_port=2222"`: optional, if you are not using ssh on port 22
 - `-e "ansible_user=root"`: ssh connexion as root
 
-After running the ansible script, create the file `/etc/wireguard/wg0.conf` and replace `<variables>` :
+After running the ansible script, create the file `/etc/wireguard/wg0.conf` on your client computer and replace `<variables>` :
 
 ```ini
 # local device
