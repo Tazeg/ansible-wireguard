@@ -1,0 +1,91 @@
+---
+
+# Tested on :
+# Ubuntu 18.04
+
+- name: WireGuard
+  hosts: all
+  become: true
+
+  vars_prompt:
+
+    - name: var_user_publickey
+      prompt: "What is your device WireGuard public key to add on server ?"
+      private: no
+  
+  tasks:
+  
+    - name: add ppa:wireguard/wireguard
+      apt_repository:
+        repo: ppa:wireguard/wireguard
+
+    - name: update
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+  
+    - name: upgrade
+      apt:
+        upgrade: dist
+
+    - name: install packages
+      apt:
+        pkg:
+        - wireguard
+        - wireguard-dkms
+        - wireguard-tools
+        - "linux-headers-{{ ansible_kernel }}"
+        - ufw
+
+    - name: ufw allow 51820
+      ufw:
+        rule: allow
+        port: '51820'
+
+    - name: mkdir -p /etc/wireguard/keys
+      file:
+        path: /etc/wireguard/keys
+        state: directory
+
+    - name: umask 077
+      shell: umask 077
+
+    - name: Creating server privatekey and publickey
+      shell: wg genkey | tee privatekey | wg pubkey > publickey
+      args:
+        chdir: /etc/wireguard/keys
+
+    - name: cat privatekey => var_privatekey
+      shell: cat privatekey
+      register: var_privatekey
+      args:
+        chdir: /etc/wireguard/keys
+
+    - name: Getting default network interface => var_interface
+      shell: ip route | grep default | awk '{print $5}'
+      register: var_interface
+
+    - name: Creating /etc/wireguard/wg0.conf
+      template:
+        src: wireguard_server
+        dest: /etc/wireguard/wg0.conf
+
+    - name: Starting wg service
+      systemd:
+        state: started
+        name: wg-quick@wg0
+        enabled: yes
+
+    - name: Check server public IP
+      shell: curl https://ipinfo.io/ip
+      register: var_server_ip
+
+    - name: cat publickey => var_publickey
+      shell: cat publickey
+      register: var_publickey
+      args:
+        chdir: /etc/wireguard/keys
+
+    - debug:
+        msg: Server public IP is {{ var_server_ip.stdout }}, Server public key is {{ var_publickey.stdout }}
+
