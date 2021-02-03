@@ -15,10 +15,6 @@
   
   tasks:
   
-    - name: add ppa:wireguard/wireguard
-      apt_repository:
-        repo: ppa:wireguard/wireguard
-
     - name: update
       apt:
         update_cache: yes

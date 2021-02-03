@@ -5,8 +5,20 @@ Script is based on [Getting Started with WireGuard](https://miguelmota.com/blog/
 
 ## Requirement
 
-- First of all, install [WireGuard](https://www.wireguard.com/install/) on your computer and generate you client private and public keys.
-- Install [Ansible](https://www.ansible.com/) on your computer.
+On your client computer :
+
+- Install [WireGuard](https://www.wireguard.com/install/)
+- Generate you client private and public keys :
+  ```bash
+  umask 077
+  wg genkey | tee privatekey | wg pubkey > publickey
+  ```
+- Install [Ansible](https://www.ansible.com/)
+- As root :
+  ```bash
+  ip link add dev wg0 type wireguard
+  ip address add dev wg0 192.168.2.1/24
+  ```
 
 ## Usage
 
