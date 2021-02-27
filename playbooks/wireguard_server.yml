@@ -12,14 +12,14 @@
     - name: var_user_publickey
       prompt: "What is your device WireGuard public key to add on server ?"
       private: no
-  
+
   tasks:
-  
+
     - name: update
       apt:
         update_cache: yes
         cache_valid_time: 3600
-  
+
     - name: upgrade
       apt:
         upgrade: dist
@@ -56,10 +56,6 @@
       register: var_privatekey
       args:
         chdir: /etc/wireguard/keys
-
-    - name: Getting default network interface => var_interface
-      shell: ip route | grep default | awk '{print $5}'
-      register: var_interface
 
     - name: Creating /etc/wireguard/wg0.conf
       template:
