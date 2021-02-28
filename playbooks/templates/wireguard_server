@@ -3,8 +3,8 @@
 PrivateKey = {{ var_privatekey.stdout }}
 Address = 10.0.0.1/24
 ListenPort = 51820
-PostUp = sysctl -w net.ipv4.ip_forward=1 ; iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ var_interface.stdout }} -j MASQUERADE
-PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ var_interface.stdout }} -j MASQUERADE
+PostUp = sysctl -w net.ipv4.ip_forward=1 ; iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ ansible_default_ipv4.interface }}  -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
 
 # client
 [Peer]
